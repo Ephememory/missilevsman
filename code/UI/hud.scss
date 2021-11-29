@@ -1,0 +1,18 @@
+﻿NetworkInfo {
+    position: absolute;
+    background-color: rgba(black, 0.5);
+    backdrop-filter: blur(20px);
+    left: 25px;
+    bottom: 48px;
+    top: 25px;
+    width: auto;
+    font-family: poppins;
+    font-size: 32px;
+    font-weight: bold;
+    color: whitesmoke;
+    height: 50;
+    padding: 15px;
+    align-items: center;
+    border-radius: 7px;
+    transition: width 50ms ease-in;
+}
