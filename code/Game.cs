@@ -1,7 +1,5 @@
-using missile.UI;
-using Missile.Player;
+using Missile.UI;
 using Sandbox;
-
 
 namespace Missile
 {
@@ -9,45 +7,37 @@ namespace Missile
 	{
 		public Game()
 		{
+			Global.PhysicsSubSteps = 2;
 			if ( IsServer )
 			{
 				// Create the HUD
 				_ = new MissileGameHud();
 			}
 		}
-		public override void ClientJoined( Client cl )
+
+		public override void OnKilled( Entity pawn )
 		{
-			var pawn = new Missile.Player.HumanPlayer();
-			pawn.Respawn();
-			cl.Pawn = pawn;
-			base.ClientJoined( cl );
+			base.OnKilled( pawn );
 		}
 
-		public static Entity Swap( Entity prev )
+		public override void ClientJoined( Client cl )
 		{
-			var currentType = prev.GetType();
-			Client cl = prev.Client;
-			Sandbox.Player newEnt;
-
-			if ( currentType == typeof( HumanPlayer ) )
+			//Decide which team the client will be on.
+			var teamDifference = NumHumans - NumMissiles;
+			if ( teamDifference < 0 )
 			{
-				newEnt = new MissilePlayer();
+				JoinTeam( cl, Team.Human );
 			}
-			else
+			else if ( teamDifference > 0 )
 			{
-				newEnt = new HumanPlayer();
+				JoinTeam( cl, Team.Missile );
+			}
+			else if ( teamDifference == 0 )
+			{
+				JoinRandomTeam( cl );
 			}
 
-
-			newEnt.Respawn();
-			cl.Pawn = newEnt;
-			newEnt.Velocity = Vector3.Zero;
-			newEnt.Position = prev.Position;
-
-			prev.Delete();
-
-			return newEnt;
-
+			base.ClientJoined( cl );
 		}
 
 	}

@@ -2,7 +2,7 @@ using Sandbox;
 
 namespace Missile.Camera
 {
-	public class CustomThirdPersonCamera : Sandbox.Camera
+	public class HumanCamera : Sandbox.Camera
 	{
 		private AnimEntity pawn;
 
@@ -10,8 +10,6 @@ namespace Missile.Camera
 		{
 			base.Activated();
 		}
-
-
 		public override void Update()
 		{
 			pawn = Local.Pawn as AnimEntity;
@@ -22,11 +20,9 @@ namespace Missile.Camera
 			Position = pawn.Position + (Input.Rotation.Backward * 200) + (Vector3.Up * 50f);
 			Rotation = Rotation.Slerp( Rotation, Rotation.LookAt( pawn.Rotation.Forward ), 16f * Time.Delta );
 
-
 			FieldOfView = 90;
 			Viewer = null;
 		}
-
 
 	}
 }

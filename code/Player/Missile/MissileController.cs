@@ -1,3 +1,4 @@
+using Missile.Util;
 using Sandbox;
 
 
@@ -18,9 +19,23 @@ namespace Missile.Player
 		[Net] private float roll { get; set; }
 
 
-		[ConVar.Replicated("missile_max_thrust")]
-		public static float MaxThrust { get; set; } = 50f;
 
+		[Net]
+		private bool spawnGracePeriodDone { get; set; } = false;
+
+
+		public MissileController()
+		{
+			ThrustVector = Vector3.Up * Game.MaxThrust;
+			Thrust = Game.MaxThrust;
+			DoGracePeriod();
+		}
+
+		private async void DoGracePeriod()
+		{
+			await GameTask.DelayRealtimeSeconds( 0.5f );
+			spawnGracePeriodDone = true;
+		}
 
 		public override void Simulate()
 		{
@@ -28,14 +43,16 @@ namespace Missile.Player
 
 			if ( Input.Down( InputButton.Forward ) || Input.Down( InputButton.Run ) )
 			{
-				Thrust = Thrust.Approach( MaxThrust, Time.Delta * 32f );
+				Thrust = Thrust.Approach( Game.MaxThrust, Time.Delta * 32f );
 			}
-			else if ( Input.Down( InputButton.Back ) || Input.Down(InputButton.Jump ) )
+			else if ( Input.Down( InputButton.Back ) || Input.Down( InputButton.Jump ) )
 			{
 				Thrust = Thrust.Approach( Thrust * 0.85f, Time.Delta * 35f );
 			}
 
-			ThrustVector = Vector3.Lerp( ThrustVector, Input.Rotation.Forward.Normal * Thrust , 4f * Time.Delta );
+			if ( spawnGracePeriodDone )
+				ThrustVector = Vector3.Lerp( ThrustVector, Input.Rotation.Forward.Normal * Thrust, 4f * Time.Delta );
+
 			Velocity = ThrustVector + (Vector3.Down * 350f * Time.Delta);
 			Position += Velocity;
 
