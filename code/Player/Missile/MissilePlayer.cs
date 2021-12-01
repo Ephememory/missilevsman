@@ -8,10 +8,13 @@ namespace Missile.Player
 	public partial class MissilePlayer : Sandbox.Player
 	{
 		public static event Action<MissilePlayer> OnSpawned;
-		private TraceResult hitBoxTraceResult { get; set; }
+		private TraceResult sphereCast { get; set; }
 
 		[Net]
-		public int LifeTime { get; private set; } = 0;
+		public float SphereCastRadius { get; private set; } = 5;
+
+		[Net]
+		public TimeSince TimeSinceLaunch { get; private set; } = 0;
 
 		TimeSince timeSinceDied;
 
@@ -27,6 +30,7 @@ namespace Missile.Player
 		public override void ClientSpawn()
 		{
 			//We only use this action to nofity the client-side HUD to change.
+			if ( Owner.Client != Local.Client ) return;
 			OnSpawned?.Invoke( this );
 			base.ClientSpawn();
 		}
@@ -34,7 +38,7 @@ namespace Missile.Player
 		public override void Respawn()
 		{
 			Host.AssertServer();
-			LifeTime = 0;
+			TimeSinceLaunch = 0;
 			LifeState = LifeState.Alive;
 			Health = 100;
 			Velocity = Vector3.Zero;
@@ -64,7 +68,7 @@ namespace Missile.Player
 		{
 			if ( Game.Debug )
 			{
-				DebugOverlay.Sphere( Position + LocalRotation.Forward * 25f, 4.5f, Color.Yellow );
+				DebugOverlay.Sphere( Position + LocalRotation.Forward * 25f, SphereCastRadius, Color.Yellow );
 			}
 
 		}
@@ -73,29 +77,28 @@ namespace Missile.Player
 		private void OnTickServer()
 		{
 			if ( LifeState != LifeState.Alive ) return;
-
-			if ( LifeTime >= Game.MaxLifeTime )
+			if ( false == (Controller as MissileController).SpawnGracePeriodFinished ) return;
+			if ( TimeSinceLaunch >= Game.MaxLifeTime )
 			{
 				Explode();
 			}
-			else
-			{
-				LifeTime++;
-			}
 
+			Log.SidedInfo( TimeSinceLaunch );
 		}
 
 		[Event.Physics.PreStep]
 		private void OnPhysicsPreStep()
 		{
 			if ( LifeState != LifeState.Alive ) return;
+
 			if ( IsServer )
 			{
-				hitBoxTraceResult = Trace.Sphere( 4.5f, Position, Position + LocalRotation.Forward * 25f ).Ignore( this ).Run();
+				if ( false == (Controller as MissileController).SpawnGracePeriodFinished ) return;
+				sphereCast = Trace.Sphere( SphereCastRadius, Position, Position + LocalRotation.Forward * 25f ).Ignore( this ).Run();
 
-				if ( hitBoxTraceResult.Hit )
+				if ( sphereCast.Hit )
 				{
-					Log.SidedInfo( hitBoxTraceResult.Entity );
+					Log.SidedInfo( sphereCast.Entity );
 					Explode();
 				}
 
@@ -130,16 +133,18 @@ namespace Missile.Player
 		private void Explode()
 		{
 			if ( LifeState != LifeState.Alive ) return;
-			new ExplosionEntity
+			var explosion = new ExplosionEntity
 			{
 				Position = Position,
-				Radius = 50f,
+				Radius = 150f,
 				Damage = 1000,
 
-			}.Explode( this );
+			};
+			explosion.Explode( this );
+
+			DebugOverlay.Sphere( Position, explosion.Radius, Color.Red, true, 5 );
 
 			ClientExplode();
-
 			if ( IsServer )
 			{
 				OnKilled();

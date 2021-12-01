@@ -19,9 +19,8 @@ namespace Missile.Player
 		[Net] private float roll { get; set; }
 
 
-
 		[Net]
-		private bool spawnGracePeriodDone { get; set; } = false;
+		public bool SpawnGracePeriodFinished { get; private set; } = false;
 
 
 		public MissileController()
@@ -34,7 +33,7 @@ namespace Missile.Player
 		private async void DoGracePeriod()
 		{
 			await GameTask.DelayRealtimeSeconds( 0.5f );
-			spawnGracePeriodDone = true;
+			SpawnGracePeriodFinished = true;
 		}
 
 		public override void Simulate()
@@ -50,7 +49,7 @@ namespace Missile.Player
 				Thrust = Thrust.Approach( Thrust * 0.85f, Time.Delta * 35f );
 			}
 
-			if ( spawnGracePeriodDone )
+			if ( SpawnGracePeriodFinished )
 				ThrustVector = Vector3.Lerp( ThrustVector, Input.Rotation.Forward.Normal * Thrust, 4f * Time.Delta );
 
 			Velocity = ThrustVector + (Vector3.Down * 350f * Time.Delta);
@@ -59,7 +58,10 @@ namespace Missile.Player
 			Rotation = Rotation.LookAt( Velocity, Vector3.Up ) * Rotation.FromRoll( roll );
 			roll += (Velocity.Length * 35) * Time.Delta;
 
+
 			base.Simulate();
+
+
 		}
 	}
 }

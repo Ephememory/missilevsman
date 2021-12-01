@@ -48,6 +48,7 @@ namespace Missile.Player
 		public override void ClientSpawn()
 		{
 			// Local.Hud.CreateEvent( "humanspawned", this );
+			if ( Owner.Client != Local.Client ) return;
 			OnSpawned?.Invoke( this );
 			base.ClientSpawn();
 		}

@@ -45,7 +45,8 @@ namespace Missile.UI
 		private void HumanSpawned( HumanPlayer human )
 		{
 			missilePlayerPanel?.Delete();
-			humanPlayerPanel = RootPanel.AddChild<HumanPlayerPanel>();
+			humanPlayerPanel = new HumanPlayerPanel( human );
+			RootPanel.AddChild( humanPlayerPanel );
 			Log.Info( human );
 			Log.Info( humanPlayerPanel );
 
@@ -54,7 +55,8 @@ namespace Missile.UI
 		private void MissileSpawned( MissilePlayer missile )
 		{
 			humanPlayerPanel?.Delete();
-			missilePlayerPanel = RootPanel.AddChild<MissilePlayerPanel>();
+			missilePlayerPanel = new MissilePlayerPanel( missile );
+			RootPanel.AddChild( missilePlayerPanel );
 			Log.Info( missile );
 		}
 	}
