@@ -10,12 +10,14 @@ namespace Missile.UI
 {
 	public class MissileLifeTimeBar : Panel
 	{
-
 		Label label;
 		private MissilePlayer player;
 		private float timeLeft;
+		private string randomEmoji;
 		public MissileLifeTimeBar( MissilePlayer ply )
 		{
+			string[] picks = { "⌛", "⏲️", "⌚", "⏱️", "⏰", "⏳" };
+			randomEmoji = picks[Rand.Int( 0, picks.Length - 1 )];
 			player = ply;
 			label = Add.Label();
 			timeLeft = Game.MaxLifeTime - 1;
@@ -27,7 +29,7 @@ namespace Missile.UI
 			if ( player.LifeState != LifeState.Alive ) return;
 			timeLeft -= Time.Delta;
 
-			label.SetText( $"⏲️ {timeLeft.CeilToInt()}" );
+			label.SetText( $"{randomEmoji} {timeLeft.CeilToInt()}" );
 
 			if ( timeLeft <= 5 )
 			{
