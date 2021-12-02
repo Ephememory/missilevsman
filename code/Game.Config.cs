@@ -11,6 +11,6 @@ namespace Missile
 		public static bool Debug { get; set; } = false;
 
 		[ConVar.Replicated( "missile_lifetime" )]
-		public static int MaxLifeTime { get; set; } = 30;
+		public static int MaxLifeTime { get; set; } = 15;
 	}
 }
