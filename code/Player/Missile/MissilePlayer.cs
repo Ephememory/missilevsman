@@ -7,6 +7,7 @@ namespace Missile.Player
 {
 	public partial class MissilePlayer : Sandbox.Player
 	{
+		static readonly Model model = Model.Load( "models/missile/missile.vmdl" );
 		public static event Action<MissilePlayer> OnSpawned;
 		private TraceResult sphereCast { get; set; }
 
@@ -22,17 +23,22 @@ namespace Missile.Player
 
 		public MissilePlayer()
 		{
+			Transmit = TransmitType.Always;
 		}
 
-		public override void Spawn()
-		{
-			base.Spawn();
-		}
-
+		//Rpc fails to get called on the initial spawn in, even with Transmit.Always?
 		public override void ClientSpawn()
 		{
-			//We only use this action to nofity the client-side HUD to change.
-			OnSpawned?.Invoke( this );
+			if ( Owner == Local.Client )
+			{
+				colorDesaturateAmount = 0.3f;
+
+				var pp = PostProcess.Get<StandardPostProcess>();
+				pp.Saturate.Enabled = true;
+				pp.Saturate.Amount = colorDesaturateAmount;
+
+				(Camera as MissileCamera).DoClientRespawn();
+			}
 			base.ClientSpawn();
 		}
 
@@ -52,7 +58,7 @@ namespace Missile.Player
 
 			EnableDrawing = true;
 			EnableAllCollisions = false;
-			SetModel( "models/missile/missile.vmdl" );
+			SetModel( model );
 
 			CollisionGroup = CollisionGroup.Player;
 			AddCollisionLayer( CollisionLayer.Player );
@@ -69,6 +75,9 @@ namespace Missile.Player
 		[ClientRpc]
 		public void ClientRespawn()
 		{
+			//We only use this action to nofity the client-side HUD to change.
+			OnSpawned?.Invoke( this );
+
 			colorDesaturateAmount = 0.3f;
 
 			var pp = PostProcess.Get<StandardPostProcess>();

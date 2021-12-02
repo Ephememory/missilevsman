@@ -10,6 +10,7 @@ namespace Missile
 			if ( IsServer )
 			{
 				Global.PhysicsSubSteps = 2;
+				DoPrecache();
 				// Create the HUD
 				_ = new MissileGameHud();
 			}

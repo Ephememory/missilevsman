@@ -7,13 +7,14 @@ namespace Missile.Player
 {
 	public partial class HumanPlayer : Sandbox.Player
 	{
+		static readonly Model model = Model.Load( "models/citizen/citizen.vmdl" );
 		public static event Action<HumanPlayer> OnSpawned;
 		public Clothing.Container Clothing = new();
 		private TimeSince timeSinceDied = 0;
 
 		public HumanPlayer()
 		{
-
+			Transmit = TransmitType.Always;
 		}
 
 		public HumanPlayer( Client cl ) : this()
@@ -22,16 +23,24 @@ namespace Missile.Player
 			Clothing.LoadFromClient( cl );
 		}
 
-		public override void Spawn()
+		//The rpc wont get called on the first spawn in
+		public override void ClientSpawn()
 		{
-			// RootPanel.AddChild<HumanPlayerPanel>();
-			base.Spawn();
+			if ( Owner == Local.Client )
+			{
+				OnSpawned?.Invoke( this );
+
+				var pp = PostProcess.Get<StandardPostProcess>();
+				pp.Saturate.Enabled = false;
+				pp.Saturate.Amount = 0f;
+			}
+			base.ClientSpawn();
 		}
 
 		public override void Respawn()
 		{
 			base.Respawn();
-			SetModel( "models/citizen/citizen.vmdl" );
+			SetModel( model );
 			Controller = new WalkController();
 			Animator = new StandardPlayerAnimator();
 			Camera = new ThirdPersonCamera();
@@ -43,17 +52,20 @@ namespace Missile.Player
 			EnableDrawing = true;
 			EnableHideInFirstPerson = true;
 			EnableShadowInFirstPerson = true;
+			Transmit = TransmitType.Always;
+			ClientRespawn( To.Single( Client ) );
 		}
 
-		public override void ClientSpawn()
+		[ClientRpc]
+		public void ClientRespawn()
 		{
+			Log.Info( Client );
 			OnSpawned?.Invoke( this );
 
 			var pp = PostProcess.Get<StandardPostProcess>();
 			pp.Saturate.Enabled = false;
 			pp.Saturate.Amount = 0f;
 
-			base.ClientSpawn();
 		}
 
 		public override void Simulate( Client cl )
