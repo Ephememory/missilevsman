@@ -28,7 +28,7 @@ namespace Missile.UI
 			RootPanel.AddChild<VoiceList>();
 			RootPanel.AddChild<KillFeed>();
 			RootPanel.AddChild<Scoreboard<ScoreboardEntry>>();
-			RootPanel.AddChild<NetworkInfo>();
+			// RootPanel.AddChild<NetworkInfo>();
 
 			//PanelEvents didnt work for some reason
 			HumanPlayer.OnSpawned += HumanSpawned;

@@ -176,7 +176,7 @@ namespace Missile.Player
 			};
 			explosion.Explode( this );
 
-			DebugOverlay.Sphere( Position, explosion.Radius, Color.Red, true, 5 );
+			// DebugOverlay.Sphere( Position, explosion.Radius, Color.Red, true, 5 );
 
 			ClientExplode();
 			if ( IsServer )

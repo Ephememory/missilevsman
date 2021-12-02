@@ -12,7 +12,7 @@ namespace Missile.UI
 		public HumanPlayerPanel( HumanPlayer player )
 		{
 			AddChild( new Health() );
-			Add.Label( $"HUMAN : {player.Name}" );
+			// Add.Label( $"HUMAN : {player.Name}" );
 		}
 	}
 }
