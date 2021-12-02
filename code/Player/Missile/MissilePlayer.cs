@@ -16,7 +16,9 @@ namespace Missile.Player
 		[Net]
 		public TimeSince TimeSinceLaunch { get; private set; } = 0;
 
-		TimeSince timeSinceDied;
+		private TimeSince timeSinceDied;
+
+		private float colorDesaturateAmount = 0f;
 
 		public MissilePlayer()
 		{
@@ -30,7 +32,6 @@ namespace Missile.Player
 		public override void ClientSpawn()
 		{
 			//We only use this action to nofity the client-side HUD to change.
-			if ( Owner.Client != Local.Client ) return;
 			OnSpawned?.Invoke( this );
 			base.ClientSpawn();
 		}
@@ -38,6 +39,7 @@ namespace Missile.Player
 		public override void Respawn()
 		{
 			Host.AssertServer();
+
 			TimeSinceLaunch = 0;
 			LifeState = LifeState.Alive;
 			Health = 100;
@@ -60,7 +62,20 @@ namespace Missile.Player
 			Game.Current?.MoveToSpawnpoint( this );
 			Position += CollisionBounds.Maxs * 2f;
 			ResetInterpolation();
+			ClientRespawn( To.Single( this ) );
+		}
 
+
+		[ClientRpc]
+		public void ClientRespawn()
+		{
+			colorDesaturateAmount = 0.3f;
+
+			var pp = PostProcess.Get<StandardPostProcess>();
+			pp.Saturate.Enabled = true;
+			pp.Saturate.Amount = colorDesaturateAmount;
+
+			(Camera as MissileCamera).DoClientRespawn();
 		}
 
 		[Event.Frame]
@@ -121,13 +136,32 @@ namespace Missile.Player
 
 			var controller = GetActiveController();
 			controller?.Simulate( cl, this, GetActiveAnimator() );
+
+		}
+
+		public override void FrameSimulate( Client cl )
+		{
+			if ( colorDesaturateAmount >= 100 ) return;
+			var pp = PostProcess.Get<StandardPostProcess>();
+			pp.Saturate.Enabled = true;
+			pp.Saturate.Amount = colorDesaturateAmount;
+			colorDesaturateAmount = colorDesaturateAmount.Approach( 100f, Time.Delta );
+			base.FrameSimulate( cl );
 		}
 
 		public override void OnKilled()
 		{
 			EnableDrawing = false;
 			timeSinceDied = 0;
+			ClientOnKilled( To.Single( this ) );
 			base.OnKilled();
+		}
+
+
+		[ClientRpc]
+		public void ClientOnKilled()
+		{
+			(Camera as MissileCamera).DoClientKilled();
 		}
 
 		private void Explode()

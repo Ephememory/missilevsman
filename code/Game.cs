@@ -7,11 +7,16 @@ namespace Missile
 	{
 		public Game()
 		{
-			Global.PhysicsSubSteps = 2;
 			if ( IsServer )
 			{
+				Global.PhysicsSubSteps = 2;
 				// Create the HUD
 				_ = new MissileGameHud();
+			}
+
+			if ( IsClient )
+			{
+				PostProcess.Add( new StandardPostProcess() );
 			}
 		}
 

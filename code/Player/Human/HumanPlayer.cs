@@ -47,9 +47,12 @@ namespace Missile.Player
 
 		public override void ClientSpawn()
 		{
-			// Local.Hud.CreateEvent( "humanspawned", this );
-			if ( Owner.Client != Local.Client ) return;
 			OnSpawned?.Invoke( this );
+
+			var pp = PostProcess.Get<StandardPostProcess>();
+			pp.Saturate.Enabled = false;
+			pp.Saturate.Amount = 0f;
+
 			base.ClientSpawn();
 		}
 
@@ -67,7 +70,6 @@ namespace Missile.Player
 
 			var controller = GetActiveController();
 			controller?.Simulate( cl, this, GetActiveAnimator() );
-
 		}
 
 		public override void OnKilled()
@@ -77,23 +79,7 @@ namespace Missile.Player
 			EnableAllCollisions = false;
 			base.OnKilled();
 		}
-		public override void Touch( Entity other )
-		{
-			Log.Info( other );
-			base.Touch( other );
-		}
 
-		public override void StartTouch( Entity other )
-		{
-			Log.Info( other );
-			base.StartTouch( other );
-		}
-
-		public override void EndTouch( Entity other )
-		{
-			Log.Info( other );
-			base.EndTouch( other );
-		}
 	}
 
 }

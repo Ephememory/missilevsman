@@ -13,9 +13,9 @@ namespace Missile.UI
 	[Library]
 	public class MissileGameHud : HudEntity<RootPanel>
 	{
-
 		private HumanPlayerPanel humanPlayerPanel = null;
 		private MissilePlayerPanel missilePlayerPanel = null;
+
 		public MissileGameHud()
 		{
 			if ( !IsClient )
@@ -44,20 +44,22 @@ namespace Missile.UI
 
 		private void HumanSpawned( HumanPlayer human )
 		{
-			missilePlayerPanel?.Delete();
+			Clear();
 			humanPlayerPanel = new HumanPlayerPanel( human );
 			RootPanel.AddChild( humanPlayerPanel );
-			Log.Info( human );
-			Log.Info( humanPlayerPanel );
-
 		}
 
 		private void MissileSpawned( MissilePlayer missile )
 		{
-			humanPlayerPanel?.Delete();
+			Clear();
 			missilePlayerPanel = new MissilePlayerPanel( missile );
 			RootPanel.AddChild( missilePlayerPanel );
-			Log.Info( missile );
+		}
+
+		private void Clear()
+		{
+			missilePlayerPanel?.Delete();
+			humanPlayerPanel?.Delete();
 		}
 	}
 }

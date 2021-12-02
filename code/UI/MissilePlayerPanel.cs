@@ -20,7 +20,7 @@ namespace Missile.UI
 			missilePlayerPawn = player;
 			Add.Label( "yer a missile" );
 			launchingStatus = Add.Panel( "launch-status-container" );
-			launchingStatus.Add.Label( "LAUNCHING", "launch-status" );
+			launchingStatus.Add.Label( "LAUNCHING MISSILE", "launch-status" );
 		}
 
 		public override void Tick()

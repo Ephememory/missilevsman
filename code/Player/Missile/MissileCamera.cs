@@ -1,3 +1,5 @@
+using Missile.Player;
+using Missile.Util;
 using Sandbox;
 
 namespace Missile.Camera
@@ -5,6 +7,20 @@ namespace Missile.Camera
 	public class MissileCamera : Sandbox.Camera
 	{
 		private AnimEntity pawn;
+		private float fovApproachAmount, fovApproachTime = 0;
+
+		public void DoClientRespawn()
+		{
+			FieldOfView = 130;
+			fovApproachAmount = 90;
+			fovApproachTime = 1;
+		}
+
+		public void DoClientKilled()
+		{
+			fovApproachAmount = 40;
+			fovApproachTime = 2;
+		}
 
 		public override void Activated()
 		{
@@ -20,8 +36,9 @@ namespace Missile.Camera
 
 			Position = pawn.Position + (Input.Rotation.Backward * 200) + (Vector3.Up * 50f);
 			Rotation = Input.Rotation;
+			FieldOfView = MathX.LerpTo( FieldOfView, fovApproachAmount, Time.Delta * fovApproachTime );
+			// FieldOfView = FieldOfView.Approach( fovApproachAmount, Time.Delta * fovApproachTime );
 
-			FieldOfView = 90;
 			Viewer = null;
 		}
 
