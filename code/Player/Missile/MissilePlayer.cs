@@ -21,9 +21,17 @@ namespace Missile.Player
 
 		private float colorDesaturateAmount = 0f;
 
+		private Color renderTint;
+
 		public MissilePlayer()
 		{
 			Transmit = TransmitType.Always;
+
+		}
+
+		public MissilePlayer( Color color ) : base()
+		{
+			renderTint = color;
 		}
 
 		//Rpc fails to get called on the initial spawn in, even with Transmit.Always?
@@ -60,6 +68,7 @@ namespace Missile.Player
 			EnableAllCollisions = false;
 			SetModel( model );
 
+			RenderColor = renderTint;
 			CollisionGroup = CollisionGroup.Player;
 			AddCollisionLayer( CollisionLayer.Player );
 			MoveType = MoveType.MOVETYPE_WALK;
@@ -106,8 +115,6 @@ namespace Missile.Player
 			{
 				Explode();
 			}
-
-			Log.SidedInfo( TimeSinceLaunch );
 		}
 
 		[Event.Physics.PreStep]
@@ -122,7 +129,6 @@ namespace Missile.Player
 
 				if ( sphereCast.Hit )
 				{
-					Log.SidedInfo( sphereCast.Entity );
 					Explode();
 				}
 

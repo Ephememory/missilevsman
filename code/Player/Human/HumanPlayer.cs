@@ -59,7 +59,6 @@ namespace Missile.Player
 		[ClientRpc]
 		public void ClientRespawn()
 		{
-			Log.Info( Client );
 			OnSpawned?.Invoke( this );
 
 			var pp = PostProcess.Get<StandardPostProcess>();

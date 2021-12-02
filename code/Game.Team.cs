@@ -29,10 +29,9 @@ namespace Missile
 
 			var currentType = prev.GetType();
 			Sandbox.Player newEnt;
-
 			if ( currentType == typeof( HumanPlayer ) )
 			{
-				newEnt = new MissilePlayer();
+				newEnt = new MissilePlayer( ColorFromPlayerId( cl.PlayerId ) );
 				cl.SetValue( "team", ((int)Team.Missile) );
 			}
 			else
@@ -55,11 +54,11 @@ namespace Missile
 			}
 			else
 			{
-				pawn = new MissilePlayer();
+				pawn = new MissilePlayer( ColorFromPlayerId( client.PlayerId ) );
 			}
 
-			pawn.Respawn();
 			client.Pawn = pawn;
+			pawn.Respawn();
 			client.SetValue( "team", ((int)whichTeam) );
 		}
 
@@ -69,7 +68,7 @@ namespace Missile
 			Sandbox.Player pawn = null;
 			if ( randomValue == 1 )
 			{
-				pawn = new MissilePlayer();
+				pawn = new MissilePlayer( ColorFromPlayerId( client.PlayerId ) );
 				client.SetValue( "team", ((int)Team.Missile) );
 			}
 			else
@@ -80,6 +79,19 @@ namespace Missile
 
 			pawn.Respawn();
 			client.Pawn = pawn;
+		}
+
+		public static Color ColorFromPlayerId( long id )
+		{
+			if ( id <= 0 ) return Color.Random;
+			if ( id == 76561197998255119 ) return Color.FromBytes( 212, 175, 55 );
+
+			//eh, it KINDA works.
+			byte r = (byte)(id >> 16);
+			byte g = (byte)((id / 2) >> 2);
+			byte b = (byte)((id / 4) >> 2);
+
+			return Color.FromBytes( r, g, b );
 		}
 	}
 
