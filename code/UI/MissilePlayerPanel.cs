@@ -18,7 +18,7 @@ namespace Missile.UI
 		public MissilePlayerPanel( MissilePlayer player )
 		{
 			missilePlayerPawn = player;
-			// Add.Label( "yer a missile" );
+			AddChild( new MissileLifeTimeBar( player ) );
 			launchingStatus = Add.Panel( "launch-status-container" );
 			launchingStatus.Add.Label( "LAUNCHING MISSILE", "launch-status" );
 		}
