@@ -11,3 +11,5 @@ tools_thumbnail_cache.bin
 *.dll
 *.pdb
 maps/editor/_bakeresourcecache/toolscene_default_baked/*
+artwork.psd
+.addon
