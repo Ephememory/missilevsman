@@ -5,6 +5,7 @@ namespace Missile
 {
 	public partial class Game : Sandbox.Game
 	{
+		public const string VERSION = "0.0.1";
 		public Game()
 		{
 			if ( IsServer )
