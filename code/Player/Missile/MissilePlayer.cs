@@ -23,6 +23,8 @@ namespace Missile.Player
 
 		private Color renderTint;
 
+		private Particles trail;
+
 		public MissilePlayer()
 		{
 			Transmit = TransmitType.Always;
@@ -32,6 +34,18 @@ namespace Missile.Player
 		public MissilePlayer( Color color ) : base()
 		{
 			renderTint = color;
+		}
+
+		protected override void OnDestroy()
+		{
+			trail?.Destroy();
+			base.OnDestroy();
+		}
+
+		public override void Spawn()
+		{
+			trail = Particles.Create( "particles/trail_missile.vpcf", this, "nozzle", true );
+			base.Spawn();
 		}
 
 		//Rpc fails to get called on the initial spawn in, even with Transmit.Always?
