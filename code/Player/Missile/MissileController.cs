@@ -5,19 +5,13 @@ namespace Missile.Player
 {
 	public partial class MissileController : BasePlayerController
 	{
+		[Net] [Predicted] public float Thrust { get; set; } = 1f;
 
-		public const float DefaultThrust = 20f;
-		[Net] public float Thrust { get; private set; } = 1f;
+		[Net] [Predicted] public Vector3 ThrustVector { get; set; } = Vector3.One;
 
-		[Net] public Vector3 ThrustVector { get; private set; } = Vector3.One;
+		[Net] [Predicted] public float roll { get; set; }
 
-		[Net] public float Modifier { get; private set; } = 0;
-
-		[Net] public float CurrentThrust => Thrust + Modifier;
-
-		[Net] private float roll { get; set; }
-
-		[Net] public bool SpawnGracePeriodFinished { get; private set; } = false;
+		[Net] [Predicted] public bool SpawnGracePeriodFinished { get; set; } = false;
 
 		public MissileController()
 		{

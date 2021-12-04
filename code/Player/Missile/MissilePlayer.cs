@@ -9,10 +9,10 @@ namespace Missile.Player
 		static readonly Model model = Model.Load( "models/missile/missile.vmdl" );
 
 		[Net]
-		public float SphereCastRadius { get; private set; } = 5;
+		public float SphereCastRadius { get; set; } = 5;
 
 		[Net]
-		public TimeSince TimeSinceLaunch { get; private set; } = 0;
+		public TimeSince TimeSinceLaunch { get; set; } = 0;
 
 		private TraceResult sphereCast { get; set; }
 
