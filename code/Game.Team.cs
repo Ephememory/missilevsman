@@ -2,24 +2,23 @@ using System.Collections.Generic;
 using Missile.UI;
 using Missile.Player;
 using Sandbox;
-
+using Missile.Util;
 
 namespace Missile
 {
 	public partial class Game : Sandbox.Game
 	{
-
-		private List<Client> TeamMissile = new();
-		private List<Client> TeamMen = new();
-
-		public int NumHumans => TeamMen.Count;
-		public int NumMissiles => TeamMissile.Count;
-
 		public enum Team : int
 		{
 			Missile = 0,
 			Human = 1
 		}
+		private static List<Client> TeamMissile = new();
+		private static List<Client> TeamMen = new();
+
+		public int NumHumans => TeamMen.Count;
+		public int NumMissiles => TeamMissile.Count;
+
 
 		[ServerCmd( "missile_switch_team" )]
 		public static void SwitchTeam()
@@ -31,13 +30,17 @@ namespace Missile
 			Sandbox.Player newEnt;
 			if ( currentType == typeof( HumanPlayer ) )
 			{
+				TeamMen.Remove( cl );
 				newEnt = new MissilePlayer( ColorFromPlayerId( cl.PlayerId ) );
 				cl.SetValue( "team", ((int)Team.Missile) );
+				TeamMissile.Add( cl );
 			}
 			else
 			{
+				TeamMissile.Remove( cl );
 				newEnt = new HumanPlayer( cl );
 				cl.SetValue( "team", ((int)Team.Human) );
+				TeamMen.Add( cl );
 			}
 
 			cl.Pawn = newEnt;
@@ -51,10 +54,12 @@ namespace Missile
 			if ( whichTeam == Team.Human )
 			{
 				pawn = new HumanPlayer( client );
+				TeamMen.Add( client );
 			}
 			else
 			{
 				pawn = new MissilePlayer( ColorFromPlayerId( client.PlayerId ) );
+				TeamMissile.Add( client );
 			}
 
 			client.Pawn = pawn;

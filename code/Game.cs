@@ -5,7 +5,7 @@ namespace Missile
 {
 	public partial class Game : Sandbox.Game
 	{
-		public const string VERSION = "0.0.1";
+		public const string VERSION = "0.1.1";
 		public Game()
 		{
 			if ( IsServer )
@@ -45,6 +45,18 @@ namespace Missile
 			}
 
 			base.ClientJoined( cl );
+		}
+
+		public override void ClientDisconnect( Client cl, NetworkDisconnectionReason reason )
+		{
+			if ( TeamMen.Contains( cl ) )
+				TeamMen.Remove( cl );
+
+			if ( TeamMissile.Contains( cl ) )
+				TeamMissile.Remove( cl );
+
+			cl.SetValue( "team", null );
+			base.ClientDisconnect( cl, reason );
 		}
 
 	}

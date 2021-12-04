@@ -11,7 +11,6 @@ namespace Missile.Util
 	{
 		public static void SidedInfo( this Logger logger, object message )
 		{
-			if ( !Game.Debug ) return;
 			var side = Host.IsServer ? "[SERVER]" : "[client]-";
 			logger.Info( $"{side}: {message}" );
 		}
