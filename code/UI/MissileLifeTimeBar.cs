@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
 using Missile.Player;
 using Sandbox;
 using Sandbox.UI;
 using Sandbox.UI.Construct;
-
 
 namespace Missile.UI
 {
@@ -14,15 +11,22 @@ namespace Missile.UI
 		private MissilePlayer player;
 		private float timeLeft;
 		private string randomEmoji;
-		public MissileLifeTimeBar( MissilePlayer ply )
+		
+		public MissileLifeTimeBar()
 		{
 			string[] picks = { "⌛", "⏲️", "⌚", "⏱️", "⏰", "⏳" };
 			randomEmoji = picks[Rand.Int( 0, picks.Length - 1 )];
-			player = ply;
 			label = Add.Label();
+			player = Local.Pawn as MissilePlayer;
+
+			Reset();
+		}
+		
+		public void Reset()
+		{
 			timeLeft = Game.MaxLifeTime - 1;
 		}
-
+		
 		public override void Tick()
 		{
 			base.Tick();

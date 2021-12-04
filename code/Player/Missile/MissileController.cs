@@ -1,4 +1,3 @@
-using Missile.Util;
 using Sandbox;
 
 
@@ -18,10 +17,7 @@ namespace Missile.Player
 
 		[Net] private float roll { get; set; }
 
-
-		[Net]
-		public bool SpawnGracePeriodFinished { get; private set; } = false;
-
+		[Net] public bool SpawnGracePeriodFinished { get; private set; } = false;
 
 		public MissileController()
 		{
@@ -58,10 +54,13 @@ namespace Missile.Player
 			Rotation = Rotation.LookAt( Velocity, Vector3.Up ) * Rotation.FromRoll( roll );
 			roll += (Velocity.Length * 35) * Time.Delta;
 
+			EyeRot = Input.Rotation;
+			WishVelocity = Velocity;
+			GroundEntity = null;
+			BaseVelocity = Vector3.Zero;
 
 			base.Simulate();
-
-
 		}
+
 	}
 }

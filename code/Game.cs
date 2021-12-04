@@ -5,7 +5,7 @@ namespace Missile
 {
 	public partial class Game : Sandbox.Game
 	{
-		public const string VERSION = "0.1.1";
+		public const string VERSION = "0.2.0";
 		public Game()
 		{
 			if ( IsServer )
@@ -13,12 +13,13 @@ namespace Missile
 				Global.PhysicsSubSteps = 2;
 				DoPrecache();
 				// Create the HUD
-				_ = new MissileGameHud();
+				_ = new Hud();
 			}
 
 			if ( IsClient )
 			{
 				PostProcess.Add( new StandardPostProcess() );
+				pp = PostProcess.Get<StandardPostProcess>();
 			}
 		}
 
@@ -39,7 +40,7 @@ namespace Missile
 			{
 				JoinTeam( cl, Team.Missile );
 			}
-			else if ( teamDifference == 0 )
+			else
 			{
 				JoinRandomTeam( cl );
 			}

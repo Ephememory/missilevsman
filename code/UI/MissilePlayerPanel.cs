@@ -1,13 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Missile.Player;
 using Sandbox;
 using Sandbox.UI;
 using Sandbox.UI.Construct;
-
 
 namespace Missile.UI
 {
@@ -16,11 +10,14 @@ namespace Missile.UI
 		public MissilePlayer missilePlayerPawn { get; private set; } //We can only hope to not lose this cached reference..
 		private Panel launchingStatus;
 		private Panel tutorial;
+		public MissileLifeTimeBar LifeTimeBar { get; private set; }
 		private float tutorialFadeout = 1;
-		public MissilePlayerPanel( MissilePlayer player )
+
+		public MissilePlayerPanel()
 		{
-			missilePlayerPawn = player;
-			AddChild( new MissileLifeTimeBar( player ) );
+			missilePlayerPawn = Local.Pawn as MissilePlayer;
+			LifeTimeBar = new MissileLifeTimeBar();
+			AddChild( LifeTimeBar );
 
 			tutorial = Add.Panel( "missile-tutorial" );
 			tutorial.Add.Label( "FORWARD or RUN to accelerate\nBACK or JUMP to decelerate\nMOUSE to steer" );

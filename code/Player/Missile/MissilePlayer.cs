@@ -1,15 +1,12 @@
-using Missile.Util;
 using Missile.Camera;
 using Sandbox;
-using System;
+using Missile.UI;
 
 namespace Missile.Player
 {
 	public partial class MissilePlayer : Sandbox.Player
 	{
 		static readonly Model model = Model.Load( "models/missile/missile.vmdl" );
-		public static event Action<MissilePlayer> OnSpawned;
-		private TraceResult sphereCast { get; set; }
 
 		[Net]
 		public float SphereCastRadius { get; private set; } = 5;
@@ -17,18 +14,17 @@ namespace Missile.Player
 		[Net]
 		public TimeSince TimeSinceLaunch { get; private set; } = 0;
 
+		private TraceResult sphereCast { get; set; }
+
 		private TimeSince timeSinceDied;
 
-		private float colorDesaturateAmount = 0f;
-
 		private Color renderTint;
-
 		private Particles trail;
+		private MissilePlayerPanel hudPanel;
 
 		public MissilePlayer()
 		{
 			Transmit = TransmitType.Always;
-
 		}
 
 		public MissilePlayer( Color color ) : base()
@@ -38,6 +34,7 @@ namespace Missile.Player
 
 		protected override void OnDestroy()
 		{
+			hudPanel?.Delete();
 			trail?.Destroy();
 			base.OnDestroy();
 		}
@@ -51,16 +48,13 @@ namespace Missile.Player
 		//Rpc fails to get called on the initial spawn in, even with Transmit.Always?
 		public override void ClientSpawn()
 		{
-			if ( Owner == Local.Client )
+			if ( Local.Pawn == this )
 			{
-				colorDesaturateAmount = 0.3f;
-
-				var pp = PostProcess.Get<StandardPostProcess>();
-				pp.Saturate.Enabled = true;
-				pp.Saturate.Amount = colorDesaturateAmount;
-
-				(Camera as MissileCamera).DoClientRespawn();
+				hudPanel = new MissilePlayerPanel();
+				Local.Hud.AddChild( hudPanel );
+				ClientRespawn();
 			}
+
 			base.ClientSpawn();
 		}
 
@@ -94,20 +88,12 @@ namespace Missile.Player
 			ClientRespawn( To.Single( this ) );
 		}
 
-
 		[ClientRpc]
 		public void ClientRespawn()
 		{
-			//We only use this action to nofity the client-side HUD to change.
-			OnSpawned?.Invoke( this );
-
-			colorDesaturateAmount = 0.3f;
-
-			var pp = PostProcess.Get<StandardPostProcess>();
-			pp.Saturate.Enabled = true;
-			pp.Saturate.Amount = colorDesaturateAmount;
-
-			(Camera as MissileCamera).DoClientRespawn();
+			(Game.Current as Missile.Game).PPSetSaturation( 0.2f );
+			(Camera as MissileCamera).DoClientRespawn(); //could maybe do custom Events?
+			hudPanel?.LifeTimeBar?.Reset();
 		}
 
 		[Event.Frame]
@@ -116,18 +102,6 @@ namespace Missile.Player
 			if ( Game.Debug )
 			{
 				DebugOverlay.Sphere( Position + LocalRotation.Forward * 25f, SphereCastRadius, Color.Yellow );
-			}
-
-		}
-
-		[Event.Tick.Server]
-		private void OnTickServer()
-		{
-			if ( LifeState != LifeState.Alive ) return;
-			if ( false == (Controller as MissileController).SpawnGracePeriodFinished ) return;
-			if ( TimeSinceLaunch >= Game.MaxLifeTime )
-			{
-				Explode();
 			}
 		}
 
@@ -145,7 +119,6 @@ namespace Missile.Player
 				{
 					Explode();
 				}
-
 			}
 		}
 
@@ -153,7 +126,7 @@ namespace Missile.Player
 		{
 			if ( LifeState == LifeState.Dead )
 			{
-				if ( timeSinceDied > 3 && IsServer )
+				if ( timeSinceDied > Game.RespawnTimer && IsServer )
 				{
 					Respawn();
 				}
@@ -166,26 +139,21 @@ namespace Missile.Player
 			var controller = GetActiveController();
 			controller?.Simulate( cl, this, GetActiveAnimator() );
 
-		}
-
-		public override void FrameSimulate( Client cl )
-		{
-			if ( colorDesaturateAmount >= 100 ) return;
-			var pp = PostProcess.Get<StandardPostProcess>();
-			pp.Saturate.Enabled = true;
-			pp.Saturate.Amount = colorDesaturateAmount;
-			colorDesaturateAmount = colorDesaturateAmount.Approach( 100f, Time.Delta );
-			base.FrameSimulate( cl );
+			if ( false == (Controller as MissileController).SpawnGracePeriodFinished ) return;
+			if ( TimeSinceLaunch >= Game.MaxLifeTime )
+			{
+				Explode();
+			}
 		}
 
 		public override void OnKilled()
 		{
 			EnableDrawing = false;
 			timeSinceDied = 0;
+
 			ClientOnKilled( To.Single( this ) );
 			base.OnKilled();
 		}
-
 
 		[ClientRpc]
 		public void ClientOnKilled()
@@ -204,10 +172,8 @@ namespace Missile.Player
 
 			};
 			explosion.Explode( this );
-
-			// DebugOverlay.Sphere( Position, explosion.Radius, Color.Red, true, 5 );
-
 			ClientExplode();
+
 			if ( IsServer )
 			{
 				OnKilled();
@@ -225,7 +191,6 @@ namespace Missile.Player
 
 			}.Explode( this );
 		}
-
 
 	}
 }

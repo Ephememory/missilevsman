@@ -1,5 +1,3 @@
-using Missile.Player;
-using Missile.Util;
 using Sandbox;
 
 namespace Missile.Camera

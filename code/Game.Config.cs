@@ -12,5 +12,8 @@ namespace Missile
 
 		[ConVar.Replicated( "missile_lifetime" )]
 		public static int MaxLifeTime { get; set; } = 15;
+
+		[ConVar.Replicated( "missile_respawn_timer" )]
+		public static int RespawnTimer { get; set; } = 3;
 	}
 }

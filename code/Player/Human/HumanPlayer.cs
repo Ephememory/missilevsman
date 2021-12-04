@@ -1,16 +1,14 @@
-using Missile.Util;
-using Missile.Camera;
 using Sandbox;
-using System;
+using Missile.UI;
 
 namespace Missile.Player
 {
 	public partial class HumanPlayer : Sandbox.Player
 	{
 		static readonly Model model = Model.Load( "models/citizen/citizen.vmdl" );
-		public static event Action<HumanPlayer> OnSpawned;
 		public Clothing.Container Clothing = new();
 		private TimeSince timeSinceDied = 0;
+		private HumanPlayerPanel hudPanel;
 
 		public HumanPlayer()
 		{
@@ -28,11 +26,9 @@ namespace Missile.Player
 		{
 			if ( Owner == Local.Client )
 			{
-				OnSpawned?.Invoke( this );
-
-				var pp = PostProcess.Get<StandardPostProcess>();
-				pp.Saturate.Enabled = false;
-				pp.Saturate.Amount = 0f;
+				hudPanel = new HumanPlayerPanel();
+				Local.Hud.AddChild( hudPanel );
+				(Game.Current as Missile.Game).PPClearSaturation();
 			}
 			base.ClientSpawn();
 		}
@@ -59,19 +55,14 @@ namespace Missile.Player
 		[ClientRpc]
 		public void ClientRespawn()
 		{
-			OnSpawned?.Invoke( this );
-
-			var pp = PostProcess.Get<StandardPostProcess>();
-			pp.Saturate.Enabled = false;
-			pp.Saturate.Amount = 0f;
-
+			(Game.Current as Missile.Game).PPClearSaturation();
 		}
 
 		public override void Simulate( Client cl )
 		{
 			if ( LifeState == LifeState.Dead )
 			{
-				if ( timeSinceDied > 3 && IsServer )
+				if ( timeSinceDied > Game.RespawnTimer && IsServer )
 				{
 					Respawn();
 				}
@@ -89,6 +80,12 @@ namespace Missile.Player
 			EnableDrawing = false;
 			EnableAllCollisions = false;
 			base.OnKilled();
+		}
+
+		protected override void OnDestroy()
+		{
+			hudPanel?.Delete();
+			base.OnDestroy();
 		}
 
 	}

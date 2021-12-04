@@ -1,8 +1,6 @@
-using System.Collections.Generic;
-using Missile.UI;
 using Missile.Player;
 using Sandbox;
-using Missile.Util;
+using System.Collections.Generic;
 
 namespace Missile
 {
