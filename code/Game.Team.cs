@@ -80,8 +80,8 @@ namespace Missile
 				client.SetValue( "team", ((int)Team.Human) );
 			}
 
-			pawn.Respawn();
 			client.Pawn = pawn;
+			pawn.Respawn();
 		}
 
 		public static Color ColorFromPlayerId( long id )
