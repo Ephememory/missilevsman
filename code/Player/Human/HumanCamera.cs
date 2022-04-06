@@ -2,7 +2,7 @@ using Sandbox;
 
 namespace Missile.Camera
 {
-	public class HumanCamera : Sandbox.Camera
+	public class HumanCamera : Sandbox.CameraMode
 	{
 		private AnimEntity pawn;
 

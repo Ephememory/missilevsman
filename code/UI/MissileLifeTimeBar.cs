@@ -24,7 +24,7 @@ namespace Missile.UI
 		
 		public void Reset()
 		{
-			timeLeft = Game.MaxLifeTime - 1;
+			timeLeft = MvmGame.MaxLifeTime - 1;
 		}
 		
 		public override void Tick()

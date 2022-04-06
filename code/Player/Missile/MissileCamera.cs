@@ -2,7 +2,7 @@ using Sandbox;
 
 namespace Missile.Camera
 {
-	public class MissileCamera : Sandbox.Camera
+	public class MissileCamera : Sandbox.CameraMode
 	{
 		private AnimEntity pawn;
 		private float fovApproachAmount, fovApproachTime = 0;

@@ -2,7 +2,7 @@ using Sandbox;
 
 namespace Missile
 {
-	public partial class Game : Sandbox.Game
+	public partial class MvmGame : Sandbox.Game
 	{
 		[ConVar.Replicated( "missile_max_thrust" )]
 		public static float MaxThrust { get; set; } = 40f;

@@ -19,7 +19,7 @@ namespace Missile.UI
 			RootPanel.AddChild<VoiceList>();
 			RootPanel.AddChild<KillFeed>();
 			RootPanel.AddChild<Scoreboard<ScoreboardEntry>>();
-			RootPanel.Add.Label( Game.VERSION, "version" );
+			RootPanel.Add.Label( MvmGame.VERSION, "version" );
 		}
 	}
 }

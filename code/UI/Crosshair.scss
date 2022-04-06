@@ -1,0 +1,20 @@
+.crosshair {
+    position: absolute;
+    left: 950px;
+    top: 50%;
+    width: 26px;
+    height: 26px;
+    border-radius: 32px;
+    border-width: 2px;
+    border-color: rgba(243, 241, 209, 0.637);
+
+    .inner {
+        background-color: white;
+        width: 3px;
+        height: 3px;
+        border-width: 1px;
+        left: 8px;
+        top: 8px;
+        border-color: rgb(0, 0, 0);
+    }
+}

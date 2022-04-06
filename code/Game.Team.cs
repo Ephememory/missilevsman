@@ -4,19 +4,19 @@ using System.Collections.Generic;
 
 namespace Missile
 {
-	public partial class Game : Sandbox.Game
+	public partial class MvmGame : Sandbox.Game
 	{
 		public enum Team : int
 		{
 			Missile = 0,
 			Human = 1
 		}
+		
 		private static List<Client> TeamMissile = new();
 		private static List<Client> TeamMen = new();
 
 		public int NumHumans => TeamMen.Count;
 		public int NumMissiles => TeamMissile.Count;
-
 
 		[ServerCmd( "missile_switch_team" )]
 		public static void SwitchTeam()
@@ -53,11 +53,13 @@ namespace Missile
 			{
 				pawn = new HumanPlayer( client );
 				TeamMen.Add( client );
+				Log.Info( $"{client.Name} joining team Human" );
 			}
 			else
 			{
 				pawn = new MissilePlayer( ColorFromPlayerId( client.PlayerId ) );
 				TeamMissile.Add( client );
+				Log.Info( $"{client.Name} joining team Missile" );
 			}
 
 			client.Pawn = pawn;
@@ -73,11 +75,13 @@ namespace Missile
 			{
 				pawn = new MissilePlayer( ColorFromPlayerId( client.PlayerId ) );
 				client.SetValue( "team", ((int)Team.Missile) );
+				Log.Info( $"{client.Name} joining team Missile by RANDOM" );
 			}
 			else
 			{
 				pawn = new HumanPlayer( client );
 				client.SetValue( "team", ((int)Team.Human) );
+				Log.Info( $"{client.Name} joining team Human by RANDOM" );
 			}
 
 			client.Pawn = pawn;

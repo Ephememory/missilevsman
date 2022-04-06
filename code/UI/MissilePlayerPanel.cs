@@ -15,6 +15,7 @@ namespace Missile.UI
 
 		public MissilePlayerPanel()
 		{
+			Event.Register( this );
 			missilePlayerPawn = Local.Pawn as MissilePlayer;
 			LifeTimeBar = new MissileLifeTimeBar();
 			AddChild( LifeTimeBar );
@@ -33,6 +34,12 @@ namespace Missile.UI
 			tutorial.Style.Opacity = tutorialFadeout;
 			tutorial.Style.Dirty();
 			base.Tick();
+		}
+
+		[Event("missile_respawn")]
+		public void HandleMissileRespawn()
+		{
+			tutorialFadeout = 1;
 		}
 	}
 }

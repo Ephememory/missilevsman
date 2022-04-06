@@ -13,6 +13,7 @@ namespace Missile.Player
 		public HumanPlayer()
 		{
 			Transmit = TransmitType.Always;
+			Inventory = new Inventory( this );
 		}
 
 		public HumanPlayer( Client cl ) : this()
@@ -28,7 +29,7 @@ namespace Missile.Player
 			{
 				hudPanel = new HumanPlayerPanel();
 				Local.Hud.AddChild( hudPanel );
-				(Game.Current as Missile.Game).PPClearSaturation();
+				MvmGame.Instance.PPClearSaturation();
 			}
 			base.ClientSpawn();
 		}
@@ -36,18 +37,20 @@ namespace Missile.Player
 		public override void Respawn()
 		{
 			base.Respawn();
-			SetModel( model );
+			Model = model;
 			Controller = new WalkController();
 			Animator = new StandardPlayerAnimator();
-			Camera = new ThirdPersonCamera();
+			CameraMode = new ThirdPersonCamera();
 
 			Clothing.DressEntity( this );
 
+			Inventory.Add( new Shotgun(), true );
 			EnableTouch = true;
 			EnableAllCollisions = true;
 			EnableDrawing = true;
 			EnableHideInFirstPerson = true;
 			EnableShadowInFirstPerson = true;
+
 			Transmit = TransmitType.Always;
 			ClientRespawn( To.Single( Client ) );
 		}
@@ -55,14 +58,14 @@ namespace Missile.Player
 		[ClientRpc]
 		public void ClientRespawn()
 		{
-			(Game.Current as Missile.Game).PPClearSaturation();
+			MvmGame.Instance.PPSetSaturation( 1 );
 		}
 
 		public override void Simulate( Client cl )
 		{
 			if ( LifeState == LifeState.Dead )
 			{
-				if ( timeSinceDied > Game.RespawnTimer && IsServer )
+				if ( timeSinceDied > MvmGame.RespawnTimer && IsServer )
 				{
 					Respawn();
 				}
@@ -72,6 +75,20 @@ namespace Missile.Player
 
 			var controller = GetActiveController();
 			controller?.Simulate( cl, this, GetActiveAnimator() );
+
+			if ( Input.ActiveChild != null )
+			{
+				ActiveChild = Input.ActiveChild;
+			}
+
+			SimulateActiveChild( cl, ActiveChild );
+		}
+
+		public override void TakeDamage( DamageInfo info )
+		{
+			if ( info.Attacker == null ) return;
+			if ( info.Attacker == null && info.Attacker.GetType() == typeof( HumanPlayer ) ) return; //Simple no friendly fire
+			base.TakeDamage( info );
 		}
 
 		public override void OnKilled()
@@ -79,6 +96,7 @@ namespace Missile.Player
 			timeSinceDied = 0;
 			EnableDrawing = false;
 			EnableAllCollisions = false;
+			Inventory.DeleteContents();
 			base.OnKilled();
 		}
 

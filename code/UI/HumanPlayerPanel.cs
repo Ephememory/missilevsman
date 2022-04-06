@@ -7,6 +7,7 @@ namespace Missile.UI
 		public HumanPlayerPanel()
 		{
 			AddChild( new Health() );
+			AddChild( new Crosshair() );
 		}
 	}
 }

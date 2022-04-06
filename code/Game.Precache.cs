@@ -2,7 +2,7 @@ using Sandbox;
 
 namespace Missile
 {
-	public partial class Game : Sandbox.Game
+	public partial class MvmGame : Sandbox.Game
 	{
 
 		public void DoPrecache()

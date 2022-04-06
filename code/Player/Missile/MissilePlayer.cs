@@ -66,23 +66,22 @@ namespace Missile.Player
 			LifeState = LifeState.Alive;
 			Health = 100;
 			Velocity = Vector3.Zero;
-			WaterLevel.Clear();
+			WaterLevel = 0;
 
 			Controller = new MissileController();
 			Animator = new MissileAnimator();
-			Camera = new MissileCamera();
+			CameraMode = new MissileCamera();
 
 			EnableDrawing = true;
 			EnableAllCollisions = false;
-			SetModel( model );
+			Model = model;
 
 			RenderColor = renderTint;
 			CollisionGroup = CollisionGroup.Player;
 			AddCollisionLayer( CollisionLayer.Player );
-			MoveType = MoveType.MOVETYPE_WALK;
 			EnableHitboxes = true;
 
-			Game.Current?.MoveToSpawnpoint( this );
+			MvmGame.Current?.MoveToSpawnpoint( this );
 			Position += CollisionBounds.Maxs * 2f;
 			ResetInterpolation();
 			ClientRespawn( To.Single( this ) );
@@ -91,15 +90,16 @@ namespace Missile.Player
 		[ClientRpc]
 		public void ClientRespawn()
 		{
-			(Game.Current as Missile.Game).PPSetSaturation( 0.2f );
-			(Camera as MissileCamera).DoClientRespawn(); //could maybe do custom Events?
+			(MvmGame.Current as Missile.MvmGame).PPSetSaturation( 0.2f );
+			(CameraMode as MissileCamera).DoClientRespawn(); //could maybe do custom Events?
 			hudPanel?.LifeTimeBar?.Reset();
+			Event.Run( "missile_respawn" );
 		}
 
 		[Event.Frame]
 		private void OnFrame()
 		{
-			if ( Game.Debug )
+			if ( MvmGame.Debug )
 			{
 				DebugOverlay.Sphere( Position + LocalRotation.Forward * 25f, SphereCastRadius, Color.Yellow );
 			}
@@ -126,7 +126,7 @@ namespace Missile.Player
 		{
 			if ( LifeState == LifeState.Dead )
 			{
-				if ( timeSinceDied > Game.RespawnTimer && IsServer )
+				if ( timeSinceDied > MvmGame.RespawnTimer && IsServer )
 				{
 					Respawn();
 				}
@@ -140,7 +140,7 @@ namespace Missile.Player
 			controller?.Simulate( cl, this, GetActiveAnimator() );
 
 			if ( false == (Controller as MissileController).SpawnGracePeriodFinished ) return;
-			if ( TimeSinceLaunch >= Game.MaxLifeTime )
+			if ( TimeSinceLaunch >= MvmGame.MaxLifeTime )
 			{
 				Explode();
 			}
@@ -158,7 +158,7 @@ namespace Missile.Player
 		[ClientRpc]
 		public void ClientOnKilled()
 		{
-			(Camera as MissileCamera).DoClientKilled();
+			(CameraMode as MissileCamera).DoClientKilled();
 		}
 
 		private void Explode()

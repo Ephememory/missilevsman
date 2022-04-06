@@ -1,5 +1,19 @@
 {
-	"sharedassets": "*.*",
-	"type": "game",
-	"ident": "null.missilevsman"
+  "Title": "Missile vs Man",
+  "Type": "game",
+  "Org": "null",
+  "Ident": "missilevsman",
+  "Schema": 1,
+  "HasAssets": true,
+  "AssetsPath": "",
+  "ResourcePaths": null,
+  "HasCode": true,
+  "CodePath": "code",
+  "RootNamespace": "Sandbox",
+  "Metadata": {
+    "MapList": [
+      "facepunch.construct"
+    ],
+    "MinPlayers": 2
+  }
 }

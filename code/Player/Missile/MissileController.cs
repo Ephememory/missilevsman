@@ -15,8 +15,8 @@ namespace Missile.Player
 
 		public MissileController()
 		{
-			ThrustVector = Vector3.Up * Game.MaxThrust;
-			Thrust = Game.MaxThrust;
+			ThrustVector = Vector3.Up * MvmGame.MaxThrust;
+			Thrust = MvmGame.MaxThrust;
 			DoGracePeriod();
 		}
 
@@ -32,7 +32,7 @@ namespace Missile.Player
 
 			if ( Input.Down( InputButton.Forward ) || Input.Down( InputButton.Run ) )
 			{
-				Thrust = Thrust.Approach( Game.MaxThrust, Time.Delta * 32f );
+				Thrust = Thrust.Approach( MvmGame.MaxThrust, Time.Delta * 32f );
 			}
 			else if ( Input.Down( InputButton.Back ) || Input.Down( InputButton.Jump ) )
 			{
@@ -48,7 +48,7 @@ namespace Missile.Player
 			Rotation = Rotation.LookAt( Velocity, Vector3.Up ) * Rotation.FromRoll( roll );
 			roll += (Velocity.Length * 35) * Time.Delta;
 
-			EyeRot = Input.Rotation;
+			EyeRotation = Input.Rotation;
 			WishVelocity = Velocity;
 			GroundEntity = null;
 			BaseVelocity = Vector3.Zero;
