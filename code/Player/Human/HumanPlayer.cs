@@ -87,7 +87,7 @@ namespace Missile.Player
 		public override void TakeDamage( DamageInfo info )
 		{
 			if ( info.Attacker == null ) return;
-			if ( info.Attacker == null && info.Attacker.GetType() == typeof( HumanPlayer ) ) return; //Simple no friendly fire
+			if ( info.Attacker.GetType() == typeof( HumanPlayer ) ) return; //Simple no friendly fire
 			base.TakeDamage( info );
 		}
 
